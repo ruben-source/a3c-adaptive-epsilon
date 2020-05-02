@@ -1,0 +1,24 @@
+def mesh(self, obs_space, n_nodes, limits):
+    # returns points and values to the nodes in a mesh
+    # assumes obs_space is of type Box
+    # creates a homogenous mesh
+
+    n_dim = len(obs_space.high)
+    assert n_dim == len(n_nodes) \
+       and n_dim > 0 \
+       and len(limits) == n_dim \
+       and len(n_nodes) == n_dim
+
+    h, l = [], []
+    for n in range(n_dim):
+        h.append(float(np.amin([obs_space.high[n], limits[n]])))
+        l.append(float(np.amax([obs_space.low[n], -limits[n]])))
+
+    points = (np.linspace(l[0], h[0], n_nodes[0]), )
+    lens = (len(points[0]), )
+    for n in range(1, n_dim):
+        point = np.linspace(l[n], h[n], n_nodes[n])
+        points += (point, )
+        lens += (len(point), )
+
+    return points, np.ones(lens) * 0.5, np.zeros(lens)

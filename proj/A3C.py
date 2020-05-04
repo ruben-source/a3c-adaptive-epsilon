@@ -9,7 +9,8 @@ import time
 
 from worker import worker_main
 from coordinator import coordinator
-from Epsilon import greedy, greedy_modified, explorer, exploiter, adaptiv
+from Epsilon.Grid import greedy, greedy_modified, explorer, exploiter, adaptiv, VDBE
+from Epsilon.Time import greedy as tgreedy, adaptive as tadaptive
 
 def train(args,save_dir, num_agents):
   
@@ -38,12 +39,12 @@ def train(args,save_dir, num_agents):
   n_nodes = (50, 50, 50, 50)
   lows    = [-4.8, -0.5, -0.42, -0.5]
   highs   = [ 4.8,  3.0,  0.42,  1.0]
-  
-  eps = []
-  eps.append(adaptiv.epsilon(n_nodes, lows, highs, init_value= 0.5))
-  eps.append(adaptiv.epsilon(n_nodes, lows, highs, init_value= 0.5))
-  for _ in range(num_agents-2):
-    eps.append(adaptiv.epsilon(n_nodes, lows, highs, init_value= 0.5))
+  num_agents = 4
+  eps = [] # (n_nodes, lows, highs, init_value= 0.5)
+  eps.append(explorer.epsilon(n_nodes, lows, highs, init_value= 0.5))
+  eps.append(exploiter.epsilon(n_nodes, lows, highs, init_value= 0.5))
+  eps.append(explorer.epsilon(n_nodes, lows, highs, init_value= 0.5))
+  eps.append(exploiter.epsilon(n_nodes, lows, highs, init_value= 0.5))
     
   processes = []
   for id in range(num_agents):

@@ -83,12 +83,16 @@ def worker_main(id, args, save_dir,
           action = np.random.randint(num_actions)
         else:
           action = np.argmax(probs.numpy())
-        eps.step_update(state[0])
-
+        
       next_state, reward, terminated, _ = env.step(action)
-      if terminated:
-        reward = -1
 
+      #if terminated:
+       # reward = -1
+      new_state = np.reshape(next_state, (1, num_states))
+      value = agent.combined_model(tf.convert_to_tensor(new_state))[0]
+      eps.step_update(state[0], value)
+
+                
       state_buffer.append(state)
       action_buffer.append(action)
       reward_buffer.append(reward)
@@ -129,13 +133,13 @@ def worker_main(id, args, save_dir,
         eps.episode_update(state_buffer[0], cum_reward)
         
         if  terminated:
-          print("Agent %d, episode %d/%d, got score %f" % (id, current_episode, args.global_T_max, score))
+          #print("Agent %d, episode %d/%d, got score %f" % (id, current_episode, args.global_T_max, score))
           scores_queue.put(score)
           
           # Save model if better than previous
           # (may be false due to frequent updating)
           if score > best_episode_score:
-            print("Agent %d saving local model with score %.0f" % (id, score))
+            print("Agent %d at episode %d/%d saving local model with score %.0f" % (id, current_episode, args.global_T_max, score))
             agent.combined_model.save_weights(
                 os.path.join(save_dir, 'tmpa3c')
             )

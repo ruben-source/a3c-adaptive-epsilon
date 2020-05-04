@@ -3,17 +3,23 @@ import matplotlib.pyplot as plt
 import os
 import datetime as dt
 
+ENVIRONMENT = 'CartPole-v1'
 
-SCORES_DIR = os.path.join('.', 'plot_scores')
-SAVE_DIR   = os.path.join('.', 'plots')
+SCORES_DIR = os.path.join('.',ENVIRONMENT, 'training_episode_scores')#'plot_scores')
+SAVE_DIR   = os.path.join('.',ENVIRONMENT, 'figures')#'plots')
 
 def plot_moving_average(length):
   files = os.listdir(SCORES_DIR)
   xs = None
+  
+  plt.figure(figsize = (8, 4))
 
-  for file in os.listdir(SCORES_DIR):
+  for file in files:
     scores = np.loadtxt(os.path.join(SCORES_DIR, file))
     moving_avgs = moving_averages(scores, length)
+
+    plt.plot(moving_avgs, alpha = 0.2)
+
     if xs is None:
       xs = moving_avgs
     else:
@@ -21,7 +27,6 @@ def plot_moving_average(length):
 
   xs = xs / len(files)
 
-  plt.figure(figsize = (8, 4))
   plt.plot(xs)
   plt.xlabel("Episode")
   plt.ylabel("Moving average episode score (length %d)" % length)

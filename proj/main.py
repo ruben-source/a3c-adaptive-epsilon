@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from A3C import train, test
 import numpy as np
 import datetime as dt
+import plot
 
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -79,5 +80,5 @@ if __name__ == '__main__':
       plt.ylabel("Moving average episode score (length %d)" % moving_avg_len)
       plt.savefig(os.path.join(save_dir, 'figures', 'moving_avg_scores.pdf'))
       print("Saved figures in", os.path.join(save_dir, 'figures'))
-
+  #plot.plot_moving_average(50)
   print("Done")

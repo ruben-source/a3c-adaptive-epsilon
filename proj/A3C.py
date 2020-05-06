@@ -9,8 +9,8 @@ import time
 
 from worker import worker_main
 from coordinator import coordinator
-from Epsilon.Grid import greedy, greedy_modified, explorer, exploiter, adaptiv, VDBE
-from Epsilon.Time import greedy as tgreedy, adaptive as tadaptive
+from Epsilon.Grid import greedy, greedy_modified, sadaptive, explorer, exploiter, adaptiv, VDBE
+from Epsilon.Time import greedy as tgreedy, adaptive as tadaptiv
 
 def train(args,save_dir, num_agents):
   
@@ -41,10 +41,14 @@ def train(args,save_dir, num_agents):
   highs   = [ 4.8,  3.0,  0.42,  1.0]
   num_agents = 4
   eps = [] # (n_nodes, lows, highs, init_value= 0.5)
-  eps.append(explorer.epsilon(n_nodes, lows, highs, init_value= 0.5))
-  eps.append(exploiter.epsilon(n_nodes, lows, highs, init_value= 0.5))
-  eps.append(explorer.epsilon(n_nodes, lows, highs, init_value= 0.5))
-  eps.append(exploiter.epsilon(n_nodes, lows, highs, init_value= 0.5))
+  #eps.append(sadaptive.epsilon(n_nodes, lows, highs, init_value= 0.5))
+  #eps.append(sadaptive.epsilon(n_nodes, lows, highs, init_value= 0.5))
+  #eps.append(sadaptive.epsilon(n_nodes, lows, highs, init_value= 0.5))
+  #eps.append(sadaptive.epsilon(n_nodes, lows, highs, init_value= 0.5))
+  eps.append(tadaptiv.epsilon(init_value= 0.5))
+  eps.append(tadaptiv.epsilon(init_value= 0.5))
+  eps.append(tadaptiv.epsilon(init_value= 0.5))
+  eps.append(tadaptiv.epsilon(init_value= 0.5))
     
   processes = []
   for id in range(num_agents):

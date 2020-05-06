@@ -4,7 +4,7 @@ from scipy.interpolate import RegularGridInterpolator
 
 class epsilon(RegularGridInterpolator):
   
-  def __init__(self, n_nodes, lows, highs, init_value = 1.0, min_value = 0.01, decay = 0.9):
+  def __init__(self, n_nodes, lows, highs, init_value = 1.0, min_value = 0.01, decay = 0.99):
     points, values = mesh(n_nodes, lows, highs, init_value)
     super().__init__(points, values)
     self.dim = len(points)

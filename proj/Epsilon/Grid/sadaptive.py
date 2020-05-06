@@ -1,58 +1,59 @@
 import numpy as np
+import tensorflow as tf
 from scipy.interpolate import RegularGridInterpolator
 
 class epsilon(RegularGridInterpolator):
 
-  def __init__(self, n_nodes, lows, highs, init_value = 1.0, min_value = 0.01, decay = 0.9):
+  def __init__(self, n_nodes, lows, highs, init_value = 1.0, min_value = 0.01, decay = 0.99):
 
     points, values = mesh(n_nodes, lows, highs, init_value)
 
     super().__init__(points, values)
     self.dim = len(points)
     self.points = points
-    self.max_prev = np.zeros(n_nodes)
-    self.k = np.zeros(n_nodes)
+    self.min = min_value
+    self.decay = decay
     self.take_random = np.ones(n_nodes, dtype=bool)
+    self.value_list = []
+    self.prev_av = 0
     
     
   def take_random_action(self, state):
     node = self.get_nearest_node(state)
-    return self.take_random[node]
-        
+    return self.take_random[node] # np.random.uniform() < self.__call__(state)
+  
+  def set_values(self, values):
+    #self.values = copy.copy(values)
+   pass
+   
   def step_update(self, state, value):
-    f, l= 7, 10#
+    # only updates itself if a node has been visited more than a certain number of times
     node = self.get_nearest_node(state)
-    if np.random.uniform() <= self.values[node]:
-        max_curr = value
-        self.k[node] += 1 
-        if self.k[node] == l:
-            delta = (value - self.max_prev[node]) * f
-            if delta > 0:
-                # sigmoid update
-                self.values[node] = 1 / (1 + np.exp(-2*delta))
-                
-            else:
-                if delta < 0:
-                    # if the new value is not better then the last value after
-                    # l or more visits, then reset it. 
-                    # new_val = min(0.5, self.__call__(point) *  1.5)
-                    self.values[node] = 0.5
-            self.max_prev[node] = max_curr
-            self.k[node] = 0
-        self.take_random[node] = True
-    else:
-        self.take_random[node] = False
-
+    self.values[node] = max(self.min, self.values[node] * self.decay)
+   
+  
   def episode_update(self, states, value):
-    pass
-    #f, l= 7, 10#10 # kommer från pappret, de testade sig fram så de kanske är konstiga för oss
-    #for point in states:
 
+    self.value_list.append(value)
+    if len(self.value_list) == 5:
+        av = np.mean(self.value_list)
+        for state in states:
+            node = self.get_nearest_node(state)
+            if av > self.prev_av:
+                self.values[node] *= self.decay
+            elif av < self.prev_av:
+                self.values[node] *= (2 - self.decay)
+        self.prev_av = av
+        self.value_list = []
 
+        
   def __call__(self, xi):
     # RegularGridInteroplators take arrays of points as inputs. Here I assume
     # that we will only call GridEpsilon on single points, which is why xi is
     # placed in a singleton array.
+    for i in range(self.dim):
+        xi[i] = min(self.points[i][-1], max(self.points[i][0], xi[i]))
+    
     return super().__call__(np.array([xi]))
   
   def get_nearest_node(self, xi):
@@ -72,7 +73,7 @@ class epsilon(RegularGridInterpolator):
     node = self.get_nearest_node(xi)
     # self.values[tuple(xi_indices)] = value
     self.values[node] = value
- 
+    
 def mesh(n_nodes, lows, highs, init_value):
     points = []
     for i in range(len(n_nodes)):

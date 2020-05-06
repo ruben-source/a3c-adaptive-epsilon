@@ -51,7 +51,19 @@ if __name__ == '__main__':
     test()
 
   else:
-    for _ in range(args.num_trainings):
+    fig = plt.figure(figsize = (8,4))
+    ax = fig.add_subplot(1,1,1)
+    ax.set_xlabel("Episode")  
+    ax.set_ylabel("Episode score")
+    ax.grid(which='both')
+
+    moving_avg_len    = 50
+    fig1 = plt.figure(figsize = (8,4))
+    ax1 = fig1.add_subplot(1,1,1)
+    ax1.set_xlabel("Episode")
+    ax1.set_ylabel("Moving average episode score (length %d)" % moving_avg_len)
+    ax1.grid(which='both')
+    for j in range(args.num_trainings):
       
       assert args.num_agents >= 2 #"should be asyncrounus training with atleast 2 agents"
       
@@ -59,7 +71,7 @@ if __name__ == '__main__':
       score_history = train(args, save_dir, args.num_agents)
 
       moving_avg_scores = []
-      moving_avg_len    = 50
+      
       for i in range(len(score_history)):
         l = min(i, moving_avg_len)
         moving_avg_scores.append( np.mean(score_history[i - l: i + 1]) )
@@ -68,17 +80,13 @@ if __name__ == '__main__':
           + ":training_scores"
       np.savetxt(os.path.join(save_dir, 'training_episode_scores', fname), score_history)
 
-      plt.figure(figsize = (8, 4))
-      plt.plot(score_history)
-      plt.xlabel("Episode")
-      plt.ylabel("Episode score")
-      plt.savefig(os.path.join(save_dir, 'figures', 'scores.pdf'))
+      ax.plot(score_history, linewidth=0.5)
+      ax1.plot(moving_avg_scores, linewidth=0.5)
 
-      plt.figure(figsize = (8, 4))
-      plt.plot(moving_avg_scores)
-      plt.xlabel("Episode")
-      plt.ylabel("Moving average episode score (length %d)" % moving_avg_len)
-      plt.savefig(os.path.join(save_dir, 'figures', 'moving_avg_scores.pdf'))
-      print("Saved figures in", os.path.join(save_dir, 'figures'))
+    fig.savefig(os.path.join(save_dir, 'figures', 'scores.pdf'))
+
+    
+    fig1.savefig(os.path.join(save_dir, 'figures', 'moving_avg_scores.pdf'))
+    print("Saved figures in", os.path.join(save_dir, 'figures'))
   #plot.plot_moving_average(50)
   print("Done")

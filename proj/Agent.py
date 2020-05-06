@@ -16,7 +16,7 @@ class Agent:
       self,
       num_actions,
       num_states,
-      learning_rate = 0.001):
+      learning_rate = 0.0025):
 
     manual_variable_initialization(True)  # TODO is this needed?
 

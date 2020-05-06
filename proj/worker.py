@@ -22,7 +22,7 @@ def worker_main(id, args, save_dir,
   gamma = 0.99
 
   t_max = args.freq
-  max_episode_length = 2000  # NOTE not used
+  max_episode_length = 500  # NOTE not used
 
   best_episode_score = 0
 
@@ -130,7 +130,7 @@ def worker_main(id, args, save_dir,
         # Request weights from global agent. 1 is a dummy
         sync_connection.send(1)
         
-        eps.episode_update(state_buffer[0], cum_reward)
+        eps.episode_update(state_buffer[0], score) #cum_reward)
         
         if  terminated:
           #print("Agent %d, episode %d/%d, got score %f" % (id, current_episode, args.global_T_max, score))

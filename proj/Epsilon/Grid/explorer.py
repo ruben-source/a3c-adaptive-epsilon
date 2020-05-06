@@ -3,7 +3,7 @@ from scipy.interpolate import RegularGridInterpolator
 
 class epsilon(RegularGridInterpolator):
 
-  def __init__(self, n_nodes, lows, highs, init_value = 1.0, min_value = 0.01, decay = 0.9):
+  def __init__(self, n_nodes, lows, highs, init_value = 1.0, min_value = 0.01, decay = 0.99):
 
     points, values = mesh(n_nodes, lows, highs, init_value)
 
@@ -48,7 +48,7 @@ class epsilon(RegularGridInterpolator):
         else:
             self.take_random[node] = True
             self.values[node] = \
-                0.5 * self.decay ** min(self.num_explore, self.update_counter[node])
+                0.5 * self.decay ** (self.update_counter[node] - self.num_explore)
     self.prev_value = value
   def episode_update(self, states, value):
     

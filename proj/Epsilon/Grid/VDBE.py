@@ -14,7 +14,7 @@ class epsilon(RegularGridInterpolator):
     self.k = np.zeros(n_nodes)
     self.take_random = np.ones(n_nodes, dtype=bool)
     self.sigma = 0.5
-    self.alpha = 0.1
+    self.alpha = 0.6
     
     
   def take_random_action(self, state):
